@@ -1,0 +1,297 @@
+MPASM  5.51                      BLINK05S.ASM   9-19-2020  15:59:37         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 
+                      00002 ; LEDs ligados no modo current sourcing:
+                      00003 ;
+                      00004 ; '0' - apaga
+                      00005 ; '1' - acende
+                      00006 ;
+                      00007 ; Cálculo do Ciclo de Máquina:
+                      00008 ;
+                      00009 ; Ciclo de máquina = 1/(Freq Cristal / 4) = 1us
+                      00010 ;
+                      00011 ;  
+                      00012 ;  
+                      00013 ;
+                      00014 
+                      00015 
+                      00016  list           p=16f84A                                                        ; microcontrolador utili
+                            zado PIC16F84A
+                      00017   
+                      00018   
+                      00019 ; --- Arquivos incluídos no projeto ---
+                      00020  #include <p16f84a.inc>                                                 ; inclui o arquivo do PIC16F84A 
+                             
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F84A processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00208         LIST
+                      00021   
+                      00022   
+                      00023 ; --- FUSE Bits ---
+                      00024 ; Cristal oscilador externo 4MHz, sem watchdog timer, com power up timer, sem proteção do código
+2007   3FF1           00025  __config _XT_OSC & _WDT_OFF & _PWRTE_ON & _CP_OFF
+                      00026         
+                      00027 
+                      00028 ; --- Paginação de Memória ---
+                      00029  #define                bank0           bcf     STATUS,RP0              ;Cria um mnemônico para o banco 
+                            0 de memória
+                      00030  #define                bank1           bsf STATUS,RP0          ;Cria um mnemônico para o banco 1 de mem
+                            ória
+                      00031  #define                led                     PORTB,RB1                       ;LED 1 ligado em RB0
+                      00032 
+                      00033                        
+                      00034                              
+                      00035 ; --- Vetor de RESET ---
+0000                  00036                                 org                     H'0000'                         ;Origem no ender
+                            eço 0000h de memória
+0000   2805           00037                                 goto            inicio                          ;Desvia do vetor de inte
+                            rrupção
+                      00038                                 
+MPASM  5.51                      BLINK05S.ASM   9-19-2020  15:59:37         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00039 ; --- Vetor de Interrupção ---
+0004                  00040                                 org                     H'0004'                         ;Todas as interr
+                            upções apontam para este endereço
+0004   0009           00041                                 retfie                                                  ;Retorna de inte
+                            rrupção
+                      00042                                 
+                      00043 
+                      00044 ; --- Programa Principal ---                            
+0005                  00045 inicio:
+0005   1683           00046                                 bank1
+0006   30FD           00047                                 movlw           H'FD'                           ;W = B'11111101'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0007   0086           00048                                 movwf           TRISB                           ;TRISB = H'F5' configura
+                             RB1 e RB3 como saída
+0008   1283           00049                                 bank0                                                   ;seleciona o ban
+                            co 0 de memória (padrão do RESET)
+0009   30FC           00050                                 movlw           H'FC'                           ;W = B'11111101'
+000A   0086           00051                                 movwf           PORTB                           ;LEDs iniciam desligados
+                      00052                                 
+000B                  00053 loop:                                                                                   ;Loop infinito
+                      00054 
+000B   1486           00055                                 bsf                     led                                     ;liga LE
+                            D1
+000C   2010           00056                                 call            delay500ms                      ;chama sub rotina
+000D   1086           00057                                 bcf                     led                                     ;desliga
+                             LED1
+000E   2010           00058                                 call            delay500ms                      ;chama sub rotina
+                      00059 
+000F   280B           00060                                 goto            loop                            ;volta para label loop
+                      00061                                 
+                      00062                                 
+                      00063                                 
+                      00064 ; --- Desenvolvimento das Sub-Rotinas ---
+                      00065                                 
+                      00066                                 
+0010                  00067 delay500ms:
+                      00068 
+0010   30C8           00069                                 movlw           D'200'                          ;Move o valor para W
+0011   008C           00070                                 movwf           H'0C'                           ;Inicializa a variável t
+                            empo0 
+                      00071 
+                      00072                                                                                                 ; 4 cicl
+                            os de máquina
+                      00073 
+0012                  00074 aux1:
+0012   30FA           00075                                 movlw           D'250'                          ;Move o valor para W
+0013   008D           00076                                 movwf           H'0D'                           ;Inicializa a variável t
+                            empo1
+                      00077         
+                      00078                                                                                                 ; 2 cicl
+                            os de máquina
+                      00079 
+0014                  00080 aux2:
+MPASM  5.51                      BLINK05S.ASM   9-19-2020  15:59:37         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0014   0000           00081                                 nop                                                             ;Gastar 
+                            1 ciclo de máquina
+0015   0000           00082                                 nop
+0016   0000           00083                                 nop
+0017   0000           00084                                 nop
+0018   0000           00085                                 nop
+0019   0000           00086                                 nop
+001A   0000           00087                                 nop
+                      00088 
+Message[305]: Using default destination of 1 (file).
+001B   0B8D           00089                                 decfsz          H'0D'                           ;Decrementa tempo1 até q
+                            ue seja igual a zero            
+001C   2814           00090                                 goto            aux2                            ;Vai para a label aux2  
+                                                                                    
+                      00091 
+                      00092                                                                                                 ; 250 x 
+                            10 ciclos de máquina = 2500 ciclos
+                      00093 
+Message[305]: Using default destination of 1 (file).
+001D   0B8C           00094                                 decfsz          H'0C'                           ;Decrementa tempo0 até q
+                            ue seja igual a zero
+001E   2812           00095                                 goto            aux1                            ;Vai para a label aux1
+                      00096 
+                      00097                                                                                                 ; 2 (aux
+                            1) + 2500 (aux2) + 3 (dec 0C e goto aux1) = 2505 ciclos de máquina
+                      00098 
+                      00099                                                                                                 ; 2505 x
+                             200 = 501000 us
+                      00100 
+001F   0008           00101                                 return                                                  ;Retorna após a 
+                            chamada da sub rotina
+                      00102                                 
+                      00103                                 
+                      00104                                 end                                                             ;Final d
+                            o programa
+MPASM  5.51                      BLINK05S.ASM   9-19-2020  15:59:37         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+DC                                00000001
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+MPASM  5.51                      BLINK05S.ASM   9-19-2020  15:59:37         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TMR0IE                            00000005
+TMR0IF                            00000002
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_CONFIG                           00002007
+_CP_OFF                           00003FFF
+_CP_ON                            0000000F
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F84A                          00000001
+aux1                              00000012
+aux2                              00000014
+bank0                             bcf     STATUS,RP0
+bank1                             bsf STATUS,RP0
+delay500ms                        00000010
+inicio                            00000005
+led                               PORTB,RB1
+loop                              0000000B
+MPASM  5.51                      BLINK05S.ASM   9-19-2020  15:59:37         PAGE  6
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX ---------------- ----------------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    29
+Program Memory Words Free:   995
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     3 reported,     0 suppressed
+
+

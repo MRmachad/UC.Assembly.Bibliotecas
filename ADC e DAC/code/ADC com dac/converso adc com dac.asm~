@@ -1,0 +1,30 @@
+stopB	equ 	p3.0
+
+org 	0000h
+jmp	inicio
+
+inicio:
+mov 	p2,#00h
+clr 	stopb
+loop:
+call	handADC
+mov 	p1,acc
+jmp	loop
+
+handADC:
+inc	p2
+doOver:
+mov	a,p2
+cjne	a,#00h,aux1
+mov	a,#0FFh
+jmp 	overadc
+aux1:
+jb	stopb,handADC	
+mov	A,p2
+subb	A,#001h
+mov	p2,#00h 
+
+overadc:		
+RET
+
+end

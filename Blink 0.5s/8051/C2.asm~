@@ -1,0 +1,37 @@
+;
+;TESTE DE FUNCIONAMENTO
+;
+;========================Definindo os pinos =============================
+
+	led	equ		p2.0	;
+
+;============================Vetor de Reset===============================
+	org			00h	;
+	setb			led
+	ajmp			inicio	;
+
+inicio:
+	cpl			p2.0	;
+	acall			delay05s
+	jmp			inicio	;
+
+
+
+delay05s:
+	mov 	r0,#250d
+
+auxms:
+	mov	a,#248d				;
+	djnz	acc,$				;
+	mov	a,#249d				;
+	djnz	acc,$				;
+	mov	a,#249d				;
+	djnz	acc,$				;
+	mov	a,#249d				;	
+	djnz	acc,$				;1998 us
+
+	djnz	r0,auxms			;250*1998 = 499500 us + 500(do dnjz) = 500000 us
+
+	ret
+
+end

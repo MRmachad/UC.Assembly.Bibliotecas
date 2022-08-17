@@ -1,0 +1,5 @@
+Message[302] C:\USERS\PUBLIC\DOCUMENTS\PROJETOS\PIC\PISCALED.ASM 46 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Error[113]   C:\USERS\PUBLIC\DOCUMENTS\PROJETOS\PIC\PISCALED.ASM 54 : Symbol not previously defined (delay05s)
+Message[305] C:\USERS\PUBLIC\DOCUMENTS\PROJETOS\PIC\PISCALED.ASM 72 : Using default destination of 1 (file).
+Message[305] C:\USERS\PUBLIC\DOCUMENTS\PROJETOS\PIC\PISCALED.ASM 80 : Using default destination of 1 (file).
+Message[305] C:\USERS\PUBLIC\DOCUMENTS\PROJETOS\PIC\PISCALED.ASM 83 : Using default destination of 1 (file).

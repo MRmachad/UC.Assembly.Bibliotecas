@@ -1,0 +1,71 @@
+;Fazer a leitura de 2 dois botão e acionar o led correspondente caso algum deles estejam ativo e escreve no lcd ambos por um determinado tempo 
+	AC1	EQU 	P2.0	
+	AC2	EQU 	P2.1	
+	LED1	EQU 	P2.2		;
+	LED2	EQU 	P2.3		; LEDs em current sink
+	overT0	EQU	066H
+	overT1	EQU	067H
+	
+	ORG	000H
+	JMP 	CONFIG
+	
+	ORG 	0BH
+	DJNZ	OVERT0,ENDT0
+	CALL	TRATAMENTO0
+ENDTIMER0:
+	RETI
+	ORG	01BH
+	DJNZ	OVERT1,ENDT1
+	CALL	TRATAMENTO1
+ENDTIMER1:
+	RETI
+
+ENDT0:	MOV	TH0,#0Bh
+	MOV	TL0,#0DCh
+	AJMP	ENDTIMER0
+	
+ENDT1:	MOV	TH1,#0Bh
+	MOV	TL1,#0DCh
+	AJMP	ENDTIMER1
+	
+TRATAMENTO0:
+	SETB	LED1
+	;ESCREVE DISPLAY DESLIGADO
+	MOV	OVERT0,#40h			;64 x o estouro do timer0
+	CLR	TR0
+	RET
+	
+TRATAMENTO1:
+	SETB	LED2
+	;ESCREVE DISPLAY DESLIGADO
+	MOV	OVERT1,#80h			;64 x o estouro do timer0
+	CLR	TR1
+	RET
+						
+						
+config:	CLR	TR1				;62500 * 16 = 1 000 000
+	CLR	TR0				;3036us valor de inicio
+	MOV	TMOD,#00010001B
+	MOV	IE,#10001010B
+	MOV	TH0,#0Bh
+	MOV	TL0,#0DCh
+	MOV	TH1,#0Bh
+	MOV	TL1,#0DCh
+	MOV	OVERT0,#40h			;64 x o estouro do timer0
+	MOV	OVERT1,#80h			;128 x o estouro do timer1
+	
+LOOP:	JB	TR0,AUXLOOP
+	JB	AC1,AUXLOOP
+	SETB	TR0
+	CLR 	LED1
+	;ESCREVE LCD
+	 
+AUXLOOP:JB	TR1,ENDLOOP
+	JB	AC2,ENDLOOP
+	SETB	TR1
+	CLR 	LED2
+	;ESCREVE LCD
+ENDLOOP:
+	JMP 	LOOP	
+
+	END	

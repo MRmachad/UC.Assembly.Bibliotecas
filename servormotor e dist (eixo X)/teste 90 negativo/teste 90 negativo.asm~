@@ -1,0 +1,34 @@
+;TESTE 90 graos negativoSERVO
+	org 	000h
+	jmp 	inicio 
+;---------------------
+inicio:
+	clr	p2.0
+	mov	r7,#1h
+	mov	r6,#13h
+	
+noventa:
+	mov	a,r7
+	mov 	b,r6
+	setb	p2.0				;inicia pulso em "1"	
+aux:
+	call	delay1Ms			;1Ms
+	djnz 	acc,aux				;0.5Ms
+ 	
+ 	
+ 	clr	P2.0			; complemento do tempo menos 1
+aux2: 
+	call    delay1Ms
+	djnz	b,aux2
+
+	JMP 	noventa
+
+delay1Ms:						;1MS= 1000uc
+	
+	Mov 	R0,#0f8h			;1000uc totais de ciclos de maquina 
+	Mov 	R1,#0f8h
+	djnz	R0,$	
+	djnz	R1,$
+	ret
+
+	end

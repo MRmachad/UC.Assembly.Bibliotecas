@@ -1,0 +1,20 @@
+# Assembler debug file for MCU 8051 IDE v1.4.9
+# Used assembler: MCU 8051 IDE
+# Date: 08/31/2020
+3DF4FA694B6F28703ED964AA0E59939C "C:/Users/Public/Documents/Projetos/Lab em casa/ADC e DAC/code/ADC com dac/converso adc com dac.asm" 
+0 4 0 2 0 3
+0 7 3 117 160 0
+0 8 6 194 176
+0 10 8 18 0 16
+0 11 11 133 224 144
+0 12 14 128 248
+0 15 16 5 160
+0 17 18 229 160
+0 18 20 180 0 5
+0 19 23 116 255
+0 20 25 2 0 38
+0 22 28 32 176 241
+0 23 31 229 160
+0 24 33 148 1
+0 25 35 117 160 0
+0 28 38 34

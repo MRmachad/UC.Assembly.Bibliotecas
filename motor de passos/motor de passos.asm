@@ -1,0 +1,82 @@
+
+;---------motor de passos--------
+	pink_2		equ	p2.1
+	blue_1		equ	p2.0
+	yellow_3	equ	p2.2
+	orange_4	equ	p2.3
+	btA		equ	p3.6
+	BtD		equ	p3.5
+	
+
+;----------vetor de reset--------
+	org	000h
+	jmp 	inicio
+;--------------------------------
+
+inicio:	
+	mov 	p2,#00h
+	setb	bta
+	setb	btd
+	mov 	r5,#0Bh
+	
+	jmp 	start
+
+start:		
+	call 	wavestep5rpm
+	jnb	bta,aumenta
+	jnb	btd,diminui
+	jmp	start	
+		
+;---------inicio subrotinas-------
+aumenta:
+	inc	r5
+	jmp	start	
+diminui:
+	mov	a,r5
+	subb	a,#001h
+	mov	r5,a
+	jmp	start	
+
+waveStep5rpm: 
+	mov 	R7,#014h
+aux1:
+	setb	blue_1
+	clr	pink_2
+	clr	yellow_3
+	clr	orange_4
+	call	delay12500us
+
+	clr	blue_1
+	setb	pink_2
+	clr	yellow_3
+	clr	orange_4
+	call	delay12500us
+
+	clr	blue_1
+	clr	pink_2
+	setb	yellow_3
+	clr	orange_4
+	call	delay12500us
+
+	clr	blue_1
+	clr	pink_2
+	clr	yellow_3
+	setb	orange_4
+	call	delay12500us
+
+	djnz	r7,aux1
+	ret
+
+delay12500us:
+	mov	a,r5
+aux:
+	mov	r0,#0ffh
+	mov	r1,#0ffh
+	mov	r2,#037h
+	djnz	r0,$
+	djnz	r1,$
+	djnz	r2,$
+	djnz	acc,aux
+	ret
+
+	end 

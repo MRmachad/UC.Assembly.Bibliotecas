@@ -1,0 +1,121 @@
+;Codificação
+;02/09/2020
+org	0000h
+jmp 	inicio
+frase:
+ 	db 'A',00h
+	DB 00H
+inicio:
+CARREGAram:
+mov	a,#35h
+push	acc
+mov	a,#2fh
+push	acc
+mov	a,#2bh
+push	acc
+mov	a,#29h
+push	acc
+mov	a,#25h
+push	acc
+mov	a,#1fh
+push	acc
+mov	a,#1dh
+push	acc
+mov	a,#17h
+push	acc
+mov	a,#13h
+push	acc
+mov	a,#11h
+push	acc
+mov	a,#0dh
+push	acc
+mov	a,#0bh
+push	acc
+mov	a,#07h
+push	acc
+mov	a,#05h
+push	acc
+mov	a,#03h
+push	acc
+mov	a,#02h
+push	acc
+
+MOV	R0,#17H		;pointer do codificador
+mov	r1,#17h		;pointer do decodificador
+Mov	acc,#00h
+Mov	dptr,#frase
+
+;=============CODIFICANDO=========
+
+loop:
+MOVC	A,@A+DPTR
+CJNE	A,#00H,AUX
+
+
+mov	dptr,#frase
+jmp	loop
+AUX:
+inc	dptr
+
+call	verificaespace
+ADD	A,#02H   		; NUMERO DE CESAR 
+mov	R7,A
+mov	a,@R0	
+add	a,R7			;Numero primo
+
+;Envio de dado
+acall	decodifica		;
+
+mov	A,#00h
+
+dec	R0
+cjne	R0,#07h,loop
+mov 	R0,#17h	
+
+jmp 	loop
+
+
+
+Verificaespace:
+CJNE	a,#20h,endVerifica
+ADD	A,#02H   		; NUMERO DE CESAR 
+mov	R7,A
+mov	a,@R0	
+add	a,R7			;Numero primo
+;envia
+acall	decodifica		;simulação do recebimento e envio
+
+mov	A,#00h
+MOV	R0,#17H
+
+jmp	loop
+
+endVerifica:
+ret
+
+;============Decodificando============
+decodifica:	
+subb	a,@r1		;
+subb	a,#02h
+dec	r1
+
+acall	verificaespace2
+
+cjne	R1,#07h,endverifica2
+mov 	R1,#17h
+ajmp	endverifica2
+
+
+Verificaespace2:
+CJNE	a,#20h,endVerifica2
+mov	R1,#17h
+mov	a,@R1
+
+endVerifica2:
+ret
+
+;==========Fim============
+
+
+
+END

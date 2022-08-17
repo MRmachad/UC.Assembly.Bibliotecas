@@ -1,0 +1,10 @@
+Fase de implementação:
+
+1-Implementar roldanas de diametro superior a 3/5 cm 
+2-Pesquisar modelos de lampada leve, levando em contar a ergonometria do objeto para ser de facil associação com a correia 
+3-Modos de fixar o conjuto motor a parede sem que aja afrouxamentos 
+4-Calcular quanto tempo o motor deve ficar ligado para movimentar 1cm, para assim, programar para andar conforme oa distancia 
+5-definir funções das memoria internas 
+6-Projetar o RTC no esquematico 
+7-Fazer interrupção externa com int0 associada a botão 
+8-Definir a função dos dois micro para trabalharem em conjunto .

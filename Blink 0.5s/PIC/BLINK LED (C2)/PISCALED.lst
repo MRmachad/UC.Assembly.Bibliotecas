@@ -1,0 +1,265 @@
+MPASM  5.51                      PISCALED.ASM   9-16-2020  18:05:26         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ; LEDs ligados no modo current sourcing:
+                      00002 ;
+                      00003 ; '0' - apaga
+                      00004 ; '1' - acende
+                      00005 ;
+                      00006 ; Cálculo do Ciclo de Máquina:
+                      00007 ;
+                      00008 ; Ciclo de máquina = 1/(Freq Cristal / 4) = 1us
+                      00009 ;
+                      00010 ;  
+                      00011 ;  
+                      00012 ;
+                      00013 
+                      00014 
+                      00015  list           p=16f84A                                                        ; microcontrolador utili
+                            zado PIC16F84A
+                      00016   
+                      00017   
+                      00018 ; --- Arquivos incluídos no projeto ---
+                      00019  #include <p16f84a.inc>                                                 ; inclui o arquivo do PIC16F84A 
+                             
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F84A processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00208         LIST
+                      00020   
+                      00021   
+                      00022 ; --- FUSE Bits ---
+                      00023 ; Cristal oscilador externo 4MHz, sem watchdog timer, com power up timer, sem proteção do código
+2007   3FF1           00024  __config _XT_OSC & _WDT_OFF & _PWRTE_ON & _CP_OFF
+                      00025         
+                      00026 
+                      00027 ; --- Paginação de Memória ---
+                      00028  #define                bank0           bcf     STATUS,RP0              ;Cria um mnemônico para o banco 
+                            0 de memória
+                      00029  #define                bank1           bsf STATUS,RP0          ;Cria um mnemônico para o banco 1 de mem
+                            ória
+                      00030  #define                led                     PORTB,RB1                       ;LED 1 ligado em RB1
+                      00031 
+                      00032                        
+                      00033                              
+                      00034 ; --- Vetor de RESET ---
+                      00035                                 org                     H'0000'                         ;Origem no ender
+                            eço 0000h de memória
+0000   2???           00036                                 goto            inicio                          ;Desvia do vetor de inte
+                            rrupção
+                      00037                                 
+                      00038 ; --- Vetor de Interrupção ---
+MPASM  5.51                      PISCALED.ASM   9-16-2020  18:05:26         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00039                                 org                     H'0004'                         ;Todas as interr
+                            upções apontam para este endereço
+0004   0009           00040                                 retfie                                                  ;Retorna de inte
+                            rrupção
+                      00041                                 
+                      00042 
+                      00043 ; --- Programa Principal ---                            
+0005                  00044 inicio:
+0005   30FD           00045                                 movlw           H'FD'                           ;W = B'11111101'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0006   0086           00046                                 movwf           TRISB                           ;TRISB = H'F5' configura
+                             RB1 e RB3 como saída
+0007   1283           00047                                 bank0                                                   ;seleciona o ban
+                            co 0 de memória (padrão do RESET)
+0008   30FD           00048                                 movlw           H'FD'                           ;W = B'11111101'
+0009   0086           00049                                 movwf           PORTB                           ;LEDs iniciam desligados
+                      00050                                 
+000A                  00051 loop:                                                                                   ;Loop infinito
+                      00052 
+000A   1486           00053                                 bsf                     led                                     ;liga LE
+                            D
+Error[113]  : Symbol not previously defined (delay05s)
+000B   2000           00054                                 call            delay05s                        ;chama sub rotina
+000C   1086           00055                                 bcf                     led                                     ;desliga
+                             LED
+000D   2???           00056                                 call            delay05ms                       ;chama sub rotina
+                      00057 
+000E   2???           00058                                 goto            loop                            ;volta para label loop
+                      00059                                 
+000F                  00060 delay05ms:
+                      00061 
+000F                  00062 auxGeral:
+000F   30FA           00063                                 movlw           D'250'                          ;Move o valor para W
+0010   008C           00064                                 movwf           H'0C'
+                      00065                         
+                      00066                                 
+0011   30FA           00067                                 movlw           D'250'                          
+0012   008D           00068                                 movwf           H'0D'                           
+                      00069                                 
+0013                  00070 aux:                    
+0013   0000           00071                                 nop             
+Message[305]: Using default destination of 1 (file).
+0014   0B8D           00072                                 decfsz          H'0D'
+0015   2???           00073                                 GOTO            aux                                     ;+1002us
+                      00074                                 
+0016   30FA           00075                                 movlw           D'250'                          
+0017   008D           00076                                 movwf           H'0D'                           
+                      00077                                 
+0018                  00078 aux1:                   
+0018   0000           00079                                 nop
+Message[305]: Using default destination of 1 (file).
+0019   0B8D           00080                                 decfsz          H'0D'
+001A   2???           00081                                 GOTO            aux1                            ;+1002us
+MPASM  5.51                      PISCALED.ASM   9-16-2020  18:05:26         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00082                                 
+Message[305]: Using default destination of 1 (file).
+001B   0B8C           00083                                 decfsz          H'0C'
+001C   2???           00084                                 GOTO            auxGeral                        ; 250 * (5 + 2004 )= 502
+                            250
+                      00085                                 
+001D   0008           00086                                 return
+                      00087                                 
+3FF1                  00088                                 end
+MPASM  5.51                      PISCALED.ASM   9-16-2020  18:05:26         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+DC                                00000001
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+MPASM  5.51                      PISCALED.ASM   9-16-2020  18:05:26         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TMR0IE                            00000005
+TMR0IF                            00000002
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_CONFIG                           00002007
+_CP_OFF                           00003FFF
+_CP_ON                            0000000F
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F84A                          00000001
+__DEBUG                           1
+aux                               00000013
+aux1                              00000018
+auxGeral                          0000000F
+bank0                             bcf     STATUS,RP0
+bank1                             bsf STATUS,RP0
+delay05ms                         0000000F
+inicio                            00000005
+MPASM  5.51                      PISCALED.ASM   9-16-2020  18:05:26         PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+led                               PORTB,RB1
+loop                              0000000A
+
+Errors   :     1
+Warnings :     0 reported,     0 suppressed
+Messages :     4 reported,     0 suppressed
+
+

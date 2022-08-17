@@ -1,0 +1,37 @@
+org	0000h
+jmp	inicio
+
+org 	0023h
+reti
+
+inicio:
+MOV	DPTR,#0000H
+MOV 	PCON,#10000000B		;(smod)
+MOV 	tmod,#00100000B		;(timer mode)
+MOV 	TH1, #00FAh		;
+MOV 	TL1, #00FAh		;
+setb	TR1			;liga o timer de recarregamento automatico COM OVERFLOW DE A CADA 6US PARA BAUD RATE DE 9600
+MOV 	SCON,#01010000B		;Determina modo 1 de serial(USART 8 bits) limpa os bits TI e RI, libera REN
+MOV 	IE,#10010000B		;HABILITA INTERRUPÇÃO SERIAL
+call	delay01s		;
+call	delay01s		;espera 
+mov	a,#0f3h
+mov	sbuf,a
+jmp	$
+
+delay01S:
+	mov	r2,#64h
+
+aux1:
+	call	aux
+	djnz	r2,aux1
+aux:
+	mov 	r0,#0ffh
+	mov		r1,#0ffh
+	djnz	r0,$
+	djnz	r1,$
+	ret		
+
+end
+
+

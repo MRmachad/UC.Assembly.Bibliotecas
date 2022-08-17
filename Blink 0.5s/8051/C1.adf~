@@ -1,0 +1,20 @@
+# Assembler debug file for MCU 8051 IDE v1.4.9
+# Used assembler: MCU 8051 IDE
+# Date: 09/16/2020
+6E2B880F2022BAD0CEA025F065C9C72B "C:/Users/Public/Documents/Projetos/Pojeto sala aula/Blink 0.5s/C1.asm" 
+0 10 0 210 160
+0 11 2 1 4
+0 14 4 178 160
+0 15 6 17 10
+0 16 8 128 250
+0 19 10 121 250
+0 21 12 122 250
+0 24 14 0
+0 25 15 0
+0 26 16 0
+0 27 17 0
+0 28 18 0
+0 29 19 0
+0 31 20 218 248
+0 33 22 217 244
+0 35 24 34
